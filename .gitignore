@@ -6,3 +6,5 @@ uploads/
 api-alunos/
 aulas/
 .env.test
+
+.env.example
