@@ -42,4 +42,32 @@ describe("ParticipanteService.criar (integração)", () => {
     const total = await Participante.count();
     expect(total).toBe(1);
   });
+
+   it("não grava participante com e-mail inválido", async () => {
+    // Arrange: um participante com e-mail SEM @
+    const dados = { nome: "Bruno", email: "bruno senai.br" };
+
+    // Act + Assert: a gravação precisa ser recusada
+    await expect(ParticipanteService.criar(dados)).rejects.toThrow();
+
+    // Assert no banco: quantos participantes devem existir agora?
+    const total = await Participante.count();
+    expect(total).toBe(0);
+  });
+});
+
+describe("ParticipanteService.atualizar (integração)", () => {
+  it("grava o nome novo no banco", async () => {
+    // Arrange: criem um participante "Ana", e-mail "ana@senai.br"
+    //          (usem ParticipanteService.criar, como nos outros testes)
+    const criado = await ParticipanteService.criar({ nome: "Ana", email: "ana@senai.br" });
+
+    // Act: atualizem o nome para "Ana Maria"
+    //      ParticipanteService.atualizar(id, { nome: "Ana Maria" })  ← não esqueçam o await
+    await ParticipanteService.atualizar(criado.id, { nome: "Ana Maria" });
+
+    // Assert: busquem o participante no banco e confiram se o nome é "Ana Maria"
+    const doBanco = await Participante.findByPk(criado.id);
+    expect(doBanco.nome).toBe("Ana Maria");
+  });
 });
